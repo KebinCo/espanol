@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Word Database</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .terminal {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            color: #58a6ff;
+            font-size: 18px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 3px;
+        }
+
+        .stat {
+            color: #c9d1d9;
+        }
+
+        .stat-value {
+            color: #7ee787;
+            font-weight: bold;
+        }
+
+        .controls {
+            margin: 20px 0;
+            padding: 10px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 3px;
+        }
+
+        .filter-btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 5px 12px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .filter-btn:hover {
+            background: #30363d;
+        }
+
+        .filter-btn.active {
+            background: #58a6ff;
+            color: #0d1117;
+        }
+
+        .word-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            margin: 20px 0;
+        }
+
+        .word-table th {
+            background: #21262d;
+            color: #58a6ff;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #30363d;
+            font-weight: bold;
+        }
+
+        .word-table td {
+            padding: 8px 10px;
+            border: 1px solid #30363d;
+            vertical-align: top;
+        }
+
+        .word-table tr:nth-child(even) {
+            background: #161b22;
+        }
+
+        .word-table tr:hover {
+            background: #21262d;
+        }
+
+        .spanish-word {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .masculine {
+            color: #58a6ff;
+        }
+
+        .feminine {
+            color: #f47298;
+        }
+
+        .korean-word {
+            color: #c9d1d9;
+        }
+
+        .definition {
+            color: #a5a5a5;
+            font-size: 14px;
+        }
+
+        .timestamp {
+            color: #6e7681;
+            font-size: 11px;
+        }
+
+        .gender-badge {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .gender-badge.masculine {
+            background: #1f3a5f;
+            color: #58a6ff;
+        }
+
+        .gender-badge.feminine {
+            background: #5f1f40;
+            color: #f47298;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #6e7681;
+            padding: 40px;
+        }
+
+        .nav-link {
+            color: #58a6ff;
+            text-decoration: none;
+            margin-right: 20px;
+        }
+
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+
+        .search-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 8px 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            width: 200px;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .prompt {
+            color: #7ee787;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <div class="header">
+            > Spanish Word Database Terminal v1.0
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                Total: <span class="stat-value" id="totalCount">0</span>
+            </div>
+            <div class="stat">
+                Masculine: <span class="stat-value" id="masculineCount">0</span>
+            </div>
+            <div class="stat">
+                Feminine: <span class="stat-value" id="feminineCount">0</span>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <span class="prompt">filter$</span>
+            <button class="filter-btn active" data-filter="all">ALL</button>
+            <button class="filter-btn" data-filter="masculine">MASCULINE</button>
+            <button class="filter-btn" data-filter="feminine">FEMININE</button>
+            
+            <span class="prompt" style="margin-left: 30px;">search$</span>
+            <input type="text" class="search-box" id="searchBox" placeholder="Search words...">
+            
+            <button class="filter-btn" onclick="refreshData()" style="margin-left: 20px;">REFRESH</button>
+        </div>
+        
+        <table class="word-table" id="wordTable">
+            <thead>
+                <tr>
+                    <th>SPANISH</th>
+                    <th>KOREAN</th>
+                    <th>GENDER</th>
+                    <th>DEFINITION</th>
+                    <th>TIMESTAMP</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+        
+        <div id="noData" class="no-data" style="display: none;">
+            <p>No words found in database.</p>
+            <p><a href="index.html" class="nav-link">[ADD_WORDS]</a></p>
+        </div>
+        
+        <div style="margin-top: 20px; border-top: 1px solid #30363d; padding-top: 15px;">
+            <a href="index.html" class="nav-link">[INPUT_MODE]</a>
+            <a href="#" onclick="exportData()" class="nav-link">[EXPORT_JSON]</a>
+            <a href="#" onclick="clearAllData()" class="nav-link">[CLEAR_ALL]</a>
+        </div>
+    </div>
+
+    <script>
+        let spanishWords = [];
+        let filteredWords = [];
+        let currentFilter = 'all';
+        let searchTerm = '';
+
+        function loadData() {
+            spanishWords = JSON.parse(localStorage.getItem('spanishWords') || '[]');
+            updateStats();
+            applyFilters();
+        }
+
+        function updateStats() {
+            const total = spanishWords.length;
+            const masculine = spanishWords.filter(word => word.gender === 'm').length;
+            const feminine = spanishWords.filter(word => word.gender === 'f').length;
+            
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('masculineCount').textContent = masculine;
+            document.getElementById('feminineCount').textContent = feminine;
+        }
+
+        function applyFilters() {
+            filteredWords = spanishWords;
+            
+            // Apply gender filter
+            if (currentFilter !== 'all') {
+                filteredWords = filteredWords.filter(word => {
+                    return (currentFilter === 'masculine' && word.gender === 'm') ||
+                           (currentFilter === 'feminine' && word.gender === 'f');
+                });
+            }
+            
+            // Apply search filter
+            if (searchTerm) {
+                filteredWords = filteredWords.filter(word => 
+                    word.spanish.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    word.korean.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (word.definition && word.definition.toLowerCase().includes(searchTerm.toLowerCase()))
+                );
+            }
+            
+            displayWords();
+        }
+
+        function displayWords() {
+            const tableBody = document.getElementById('tableBody');
+            const noData = document.getElementById('noData');
+            
+            if (filteredWords.length === 0) {
+                tableBody.innerHTML = '';
+                noData.style.display = 'block';
+                document.getElementById('wordTable').style.display = 'none';
+                return;
+            }
+            
+            noData.style.display = 'none';
+            document.getElementById('wordTable').style.display = 'table';
+            
+            // Sort by timestamp (newest first)
+            const sortedWords = [...filteredWords].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+            
+            tableBody.innerHTML = sortedWords.map(word => {
+                const genderClass = word.gender === 'm' ? 'masculine' : 'feminine';
+                const genderText = word.gender === 'm' ? 'M' : 'F';
+                const date = new Date(word.timestamp).toLocaleString();
+                const definition = word.definition || 'No definition';
+                
+                return `
+                    <tr>
+                        <td>
+                            <span class="spanish-word ${genderClass}">${word.spanish}</span>
+                        </td>
+                        <td>
+                            <span class="korean-word">${word.korean}</span>
+                        </td>
+                        <td>
+                            <span class="gender-badge ${genderClass}">${genderText}</span>
+                        </td>
+                        <td>
+                            <span class="definition">${definition}</span>
+                        </td>
+                        <td>
+                            <span class="timestamp">${date}</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function refreshData() {
+            loadData();
+            console.log('Data refreshed');
+        }
+
+        function exportData() {
+            if (spanishWords.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(spanishWords, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'spanish_words_export.json';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            console.log('Data exported');
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to delete all words? This action cannot be undone.')) {
+                localStorage.removeItem('spanishWords');
+                loadData();
+                console.log('All data cleared');
+            }
+        }
+
+        // Event listeners
+        document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn[data-filter]').forEach(b => 
+                    b.classList.remove('active')
+                );
+                this.classList.add('active');
+                currentFilter = this.dataset.filter;
+                applyFilters();
+            });
+        });
+
+        document.getElementById('searchBox').addEventListener('input', function() {
+            searchTerm = this.value;
+            applyFilters();
+        });
+
+        // Initialize
+        loadData();
+
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            const newWords = JSON.parse(localStorage.getItem('spanishWords') || '[]');
+            if (newWords.length !== spanishWords.length) {
+                loadData();
+            }
+        }, 5000);
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey) {
+                switch(e.key) {
+                    case 'f':
+                        e.preventDefault();
+                        document.getElementById('searchBox').focus();
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        refreshData();
+                        break;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
