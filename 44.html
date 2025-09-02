@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Words</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .word-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .word-item:last-child {
+            border-bottom: none;
+        }
+
+        .spanish-word {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .masculine {
+            color: #58a6ff;
+        }
+
+        .feminine {
+            color: #f47298;
+        }
+
+        .korean-word {
+            color: #c9d1d9;
+            font-size: 16px;
+        }
+
+        .nav-link {
+            color: #58a6ff;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #30363d;
+        }
+
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+
+        .no-words {
+            text-align: center;
+            color: #6e7681;
+            padding: 60px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="wordList">
+            <!-- Words will appear here -->
+        </div>
+        
+        <div id="noWords" class="no-words" style="display: none;">
+            No words yet
+        </div>
+        
+        <a href="index.html" class="nav-link">Add Words</a>
+    </div>
+
+    <script>
+        function loadWords() {
+            const spanishWords = JSON.parse(localStorage.getItem('spanishWords') || '[]');
+            const wordList = document.getElementById('wordList');
+            const noWords = document.getElementById('noWords');
+            
+            if (spanishWords.length === 0) {
+                wordList.innerHTML = '';
+                noWords.style.display = 'block';
+                return;
+            }
+            
+            noWords.style.display = 'none';
+            
+            wordList.innerHTML = spanishWords.map(word => {
+                const genderClass = word.gender === 'm' ? 'masculine' : 'feminine';
+                
+                return `
+                    <div class="word-item">
+                        <span class="spanish-word ${genderClass}">${word.spanish}</span>
+                        <span class="korean-word">${word.korean}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        loadWords();
+        
+        setInterval(loadWords, 2000);
+    </script>
+</body>
+</html>
