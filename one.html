@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스페인어 학습지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        input, select, button {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .word-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .word-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .word-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .masculine {
+            border-left-color: #4a90e2;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
+        }
+
+        .feminine {
+            border-left-color: #e24a90;
+            background: linear-gradient(135deg, #ffffff 0%, #fff0f7 100%);
+        }
+
+        .neutral {
+            border-left-color: #50c878;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fff4 100%);
+        }
+
+        .word-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .spanish-word {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .gender-tag {
+            padding: 5px 12px;
+            border-radius: 20px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .masculine .gender-tag {
+            background: #4a90e2;
+        }
+
+        .feminine .gender-tag {
+            background: #e24a90;
+        }
+
+        .neutral .gender-tag {
+            background: #50c878;
+        }
+
+        .translation {
+            font-size: 1.3em;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 10px;
+        }
+
+        .example {
+            background: rgba(102, 126, 234, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #667eea;
+            margin-top: 10px;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background: #ff3742;
+            transform: scale(1.1);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .no-words {
+            text-align: center;
+            padding: 50px;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇪🇸 스페인어 학습지 📚</h1>
+        
+        <div class="input-section">
+            <div class="input-group">
+                <input type="text" id="spanishWord" placeholder="스페인어 단어 입력" style="flex: 2;">
+                <select id="gender" style="flex: 1;">
+                    <option value="masculine">남성 (el)</option>
+                    <option value="feminine">여성 (la)</option>
+                    <option value="neutral">중성</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <input type="text" id="translation" placeholder="한국어 번역" style="flex: 2;">
+                <button onclick="addWord()" style="flex: 1;">단어 추가</button>
+            </div>
+            <div class="input-group">
+                <input type="text" id="example" placeholder="예문 (선택사항)" style="flex: 3;">
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalCount">0</div>
+                <div class="stat-label">총 단어</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="masculineCount">0</div>
+                <div class="stat-label">남성명사</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="feminineCount">0</div>
+                <div class="stat-label">여성명사</div>
+            </div>
+        </div>
+
+        <div id="wordList">
+            <div class="no-words">
+                단어를 추가해보세요! 🌟
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let words = JSON.parse(localStorage.getItem('spanishWords')) || [];
+
+        // 기본 번역 데이터 (간단한 단어들)
+        const basicTranslations = {
+            'casa': '집',
+            'libro': '책',
+            'agua': '물',
+            'mesa': '테이블',
+            'silla': '의자',
+            'perro': '개',
+            'gato': '고양이',
+            'coche': '자동차',
+            'escuela': '학교',
+            'trabajo': '일/직장',
+            'familia': '가족',
+            'comida': '음식',
+            'tiempo': '시간',
+            'dinero': '돈',
+            'ciudad': '도시',
+            'país': '나라',
+            'mundo': '세상',
+            'vida': '인생',
+            'amor': '사랑',
+            'amigo': '친구',
+            'hombre': '남자',
+            'mujer': '여자',
+            'niño': '아이(남)',
+            'niña': '아이(여)',
+            'padre': '아버지',
+            'madre': '어머니',
+            'hijo': '아들',
+            'hija': '딸',
+            'hermano': '형/남동생',
+            'hermana': '누나/여동생',
+            'café': '커피',
+            'leche': '우유',
+            'pan': '빵',
+            'carne': '고기',
+            'fruta': '과일',
+            'verdura': '채소',
+            'mañana': '아침/내일',
+            'tarde': '오후/저녁',
+            'noche': '밤',
+            'día': '하루/낮',
+            'semana': '주',
+            'mes': '달',
+            'año': '년',
+            'hora': '시간',
+            'minuto': '분',
+            'segundo': '초'
+        };
+
+        function autoTranslate(spanishWord) {
+            const word = spanishWord.toLowerCase().trim();
+            return basicTranslations[word] || '';
+        }
+
+        function autoDetectGender(spanishWord) {
+            const word = spanishWord.toLowerCase().trim();
+            
+            // 여성명사 패턴
+            if (word.endsWith('a') || word.endsWith('ión') || word.endsWith('dad') || 
+                word.endsWith('tad') || word.endsWith('umbre')) {
+                return 'feminine';
+            }
+            
+            // 남성명사 패턴
+            if (word.endsWith('o') || word.endsWith('or') || word.endsWith('aje')) {
+                return 'masculine';
+            }
+            
+            // 특별한 경우들
+            const feminineWords = ['agua', 'mano', 'foto', 'moto'];
+            const masculineWords = ['día', 'mapa', 'problema', 'tema'];
+            
+            if (feminineWords.includes(word)) return 'feminine';
+            if (masculineWords.includes(word)) return 'masculine';
+            
+            return 'masculine'; // 기본값
+        }
+
+        document.getElementById('spanishWord').addEventListener('input', function(e) {
+            const spanishWord = e.target.value;
+            const translation = autoTranslate(spanishWord);
+            const gender = autoDetectGender(spanishWord);
+            
+            if (translation) {
+                document.getElementById('translation').value = translation;
+            }
+            
+            document.getElementById('gender').value = gender;
+        });
+
+        function addWord() {
+            const spanishWord = document.getElementById('spanishWord').value.trim();
+            const translation = document.getElementById('translation').value.trim();
+            const gender = document.getElementById('gender').value;
+            const example = document.getElementById('example').value.trim();
+
+            if (!spanishWord || !translation) {
+                alert('스페인어 단어와 번역을 모두 입력해주세요!');
+                return;
+            }
+
+            const word = {
+                id: Date.now(),
+                spanish: spanishWord,
+                translation: translation,
+                gender: gender,
+                example: example,
+                dateAdded: new Date().toLocaleDateString('ko-KR')
+            };
+
+            words.unshift(word);
+            localStorage.setItem('spanishWords', JSON.stringify(words));
+            
+            // 입력 필드 초기화
+            document.getElementById('spanishWord').value = '';
+            document.getElementById('translation').value = '';
+            document.getElementById('example').value = '';
+            
+            renderWords();
+            updateStats();
+        }
+
+        function deleteWord(id) {
+            words = words.filter(word => word.id !== id);
+            localStorage.setItem('spanishWords', JSON.stringify(words));
+            renderWords();
+            updateStats();
+        }
+
+        function renderWords() {
+            const wordList = document.getElementById('wordList');
+            
+            if (words.length === 0) {
+                wordList.innerHTML = '<div class="no-words">단어를 추가해보세요! 🌟</div>';
+                return;
+            }
+
+            wordList.innerHTML = words.map(word => `
+                <div class="word-card ${word.gender}">
+                    <button class="delete-btn" onclick="deleteWord(${word.id})">×</button>
+                    <div class="word-header">
+                        <span class="spanish-word">${word.spanish}</span>
+                        <span class="gender-tag">
+                            ${word.gender === 'masculine' ? 'el' : word.gender === 'feminine' ? 'la' : '중성'}
+                        </span>
+                    </div>
+                    <div class="translation">${word.translation}</div>
+                    ${word.example ? `<div class="example">💡 ${word.example}</div>` : ''}
+                    <div style="font-size: 0.8em; color: #999; margin-top: 10px;">추가일: ${word.dateAdded}</div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalCount').textContent = words.length;
+            document.getElementById('masculineCount').textContent = words.filter(w => w.gender === 'masculine').length;
+            document.getElementById('feminineCount').textContent = words.filter(w => w.gender === 'feminine').length;
+        }
+
+        // Enter 키로 단어 추가
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addWord();
+            }
+        });
+
+        // 페이지 로드 시 실행
+        renderWords();
+        updateStats();
+    </script>
+</body>
+</html>
