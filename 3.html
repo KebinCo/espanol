@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spanish Input</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0d1117;
+            color: #c9d1d9;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 40px;
+            width: 400px;
+        }
+
+        input[type="text"] {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            width: 100%;
+            border-radius: 3px;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #58a6ff;
+        }
+
+        .btn {
+            background: #21262d;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-top: 15px;
+            border-radius: 3px;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        .btn:hover {
+            background: #30363d;
+        }
+
+        .nav-link {
+            color: #58a6ff;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+            margin-top: 20px;
+        }
+
+        .nav-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="wordForm">
+            <input type="text" id="spanish" placeholder="Spanish word..." autocomplete="off">
+            <button type="submit" class="btn">ADD</button>
+        </form>
+        
+        <a href="output.html" class="nav-link">View Words</a>
+    </div>
+
+    <script>
+        document.getElementById('wordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const spanish = document.getElementById('spanish').value.trim().toLowerCase();
+            
+            if (!spanish) return;
+            
+            try {
+                const korean = await translateToKorean(spanish);
+                const gender = await getGenderFromDictionary(spanish);
+                
+                const wordData = {
+                    spanish: spanish,
+                    korean: korean,
+                    gender: gender,
+                    timestamp: new Date().toISOString()
+                };
+                
+                let spanishWords = JSON.parse(localStorage.getItem('spanishWords') || '[]');
+                spanishWords.push(wordData);
+                localStorage.setItem('spanishWords', JSON.stringify(spanishWords));
+                
+                document.getElementById('spanish').value = '';
+                
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        });
+
+        async function getGenderFromDictionary(word) {
+            // 실제로는 온라인 사전 크롤링
+            const genderData = {
+                'casa': 'f', 'libro': 'm', 'mesa': 'f', 'perro': 'm', 'gato': 'm',
+                'agua': 'f', 'sol': 'm', 'luna': 'f', 'tiempo': 'm', 'vida': 'f',
+                'amor': 'm', 'trabajo': 'm', 'escuela': 'f', 'estudiante': 'm',
+                'profesor': 'm', 'amigo': 'm', 'amiga': 'f', 'ciudad': 'f',
+                'país': 'm', 'mundo': 'm', 'familia': 'f', 'madre': 'f',
+                'padre': 'm', 'hijo': 'm', 'hija': 'f', 'hermano': 'm',
+                'hermana': 'f', 'coche': 'm', 'comida': 'f', 'dinero': 'm'
+            };
+            
+            return genderData[word] || (word.endsWith('a') ? 'f' : 'm');
+        }
+
+        async function translateToKorean(text) {
+            const translations = {
+                'casa': '집', 'libro': '책', 'mesa': '테이블', 'perro': '개', 'gato': '고양이',
+                'agua': '물', 'sol': '태양', 'luna': '달', 'tiempo': '시간', 'vida': '삶',
+                'amor': '사랑', 'trabajo': '일', 'escuela': '학교', 'estudiante': '학생',
+                'profesor': '교수', 'amigo': '친구', 'amiga': '친구', 'ciudad': '도시',
+                'país': '나라', 'mundo': '세계', 'familia': '가족', 'madre': '어머니',
+                'padre': '아버지', 'hijo': '아들', 'hija': '딸', 'hermano': '형제',
+                'hermana': '자매', 'coche': '자동차', 'comida': '음식', 'dinero': '돈'
+            };
+            
+            return translations[text] || `${text}_번역`;
+        }
+    </script>
+</body>
+</html>
